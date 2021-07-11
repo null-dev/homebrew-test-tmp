@@ -20,25 +20,15 @@ class FirefoxProfileSwitcherConnector < Formula
       manifest_contents = manifest_contents.gsub(/(^\s*"path"\s*:\s*").*("\s*,?\s*$)/) { $1 + bin_path + $2 }
       File.open(orig_manifest_path, "w") {|f| f.puts manifest_contents }
 
-      puts "Wrote new manifest, path: " + bin_path + ", manifest: " + manifest_contents
-
       # Install files
       prefix.install orig_manifest_path => @@manifest_name
       bin.install "target/release/firefox_profile_switcher_connector" => bin_name
     end
 
     def post_install
-      puts "Testing post install!"
+      manifest_path = File.expand_path(prefix, @@manifest_name)
+      manifest_destination = '/Library/Application Support/Mozilla/NativeMessagingHosts'
+      system "mkdir", "-p", manifest_destination
+      system "ln", "-sf", "#{manifest_destination}/#{@@manifest_name}"
     end
-
-    def caveats
-      manifest_source = "#{HOMEBREW_CELLAR}/firefox-profile-switcher-connector/#{version}"
-      manifest_destination = '~"/Library/Application Support/Mozilla/NativeMessagingHosts"'
-      <<~EOS
-         The plugin manifest is installed but not linked in Firefox. Run the following two commands to link it:
-             mkdir -p #{manifest_destination}
-             ln -sf "#{manifest_source}/#{@@manifest_name}" #{manifest_destination}/#{@@manifest_name}
-      EOS
-    end
-
   end

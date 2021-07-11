@@ -28,8 +28,7 @@ class FirefoxProfileSwitcherConnector < Formula
     def post_install
       manifest_path = File.expand_path(prefix / @@manifest_name)
       manifest_destination = File.expand_path('~/Library/Application Support/Mozilla/NativeMessagingHosts')
-      puts `id`
-      system "mkdir", "-p", manifest_destination
-      system "ln", "-sf", manifest_path, "#{manifest_destination}/#{@@manifest_name}"
+      mkdir_p manifest_destination
+      ln_sf manifest_path, "#{manifest_destination}/#{@@manifest_name}"
     end
   end
